@@ -63,4 +63,106 @@ WHERE actor_id = 172;
 SHOW CREATE TABLE address;
 
 --6a
+SELECT staff.first_name, staff.last_name, address.address
+FROM staff
+JOIN address
+ON staff.address_id = address.address_id;
 
+--6b
+SELECT staff.first_name, staff.last_name, SUM(payment.amount)
+FROM staff 
+JOIN payment ON staff.staff_id = payment.staff_id
+WHERE YEAR(payment.payment_date) = 2005 AND MONTH(payment.payment_date) = 8
+GROUP BY 1, 2;
+
+--6c
+SELECT film.title, COUNT(film_actor.actor_id) 
+FROM film
+INNER JOIN film_actor ON film.film_id = film_actor.film_id
+GROUP BY 1;
+
+--6d
+SELECT film.title, COUNT(inventory.inventory_id) 
+FROM film
+INNER JOIN inventory ON film.film_id = inventory.film_id
+WHERE film.title LIKE "Hunchback Impossible"
+GROUP BY 1;
+
+--6e
+SELECT p.customer_id, SUM(p.amount), c.first_name, c.last_name
+    FROM payment p
+    JOIN customer c ON c.customer_id = p.customer_id
+    GROUP BY 1, 3, 4
+    ORDER BY 4;
+
+--7a
+SELECT title FROM film 
+WHERE language_id IN
+    (SELECT language_id
+        FROM language 
+        WHERE name = "English")
+AND (title LIKE "K%" OR title LIKE "Q%");
+
+-- 7b. 
+SELECT first_name, last_name FROM actor
+WHERE actor_id IN 
+    (SELECT actor_id FROM film_actor 
+    WHERE film_id IN
+        (SELECT film_id FROM film
+        WHERE title = "Alone Trip"));
+
+-- 7c. 
+SELECT c.first_name, c.last_name, c.email FROM customer c 
+JOIN customer_list cl ON c.customer_id = cl.ID
+WHERE cl.country = "Canada";
+
+-- 7d. 
+SELECT title FROM film 
+WHERE film_id IN
+    (SELECT film_id FROM film_category
+    WHERE category_id IN
+        (SELECT category_id FROM category
+        WHERE name = "Family" ));
+
+-- 7e. Display the most frequently rented movies in descending order.
+SELECT f.title, COUNT(*) FROM film f, inventory i, rental r
+WHERE f.film_id = i.film_id 
+AND r.inventory_id = i.inventory_id 
+GROUP BY i.film_id
+ORDER BY 2 DESC;
+
+-- 7f. 
+SELECT store, total_sales FROM sales_by_store;
+
+-- 7g. Write a query to display for each store its store ID, city, and country.
+SELECT s.store_id, ci.city, co.country FROM store s
+JOIN address a ON s.address_id = a.address_id
+JOIN city ci ON a.city_id = ci.city_id
+JOIN country co ON ci.country_id = co.country_id;
+
+-- 7h. List the top five genres in gross revenue in descending order. (Hint: you may need to use the following tables: category, film_category, inventory, payment, and rental.)
+SELECT name, SUM(p.amount) AS revenue_gross FROM category c
+JOIN film_category fc ON fc.category_id = c.category_id
+JOIN inventory i ON i.film_id = fc.film_id
+JOIN rental r ON r.inventory_id = i.inventory_id
+JOIN payment p ON p.rental_id = r.rental_id
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 5;
+
+-- 8a. 
+CREATE VIEW top_five_genres AS
+SELECT name, SUM(p.amount) AS revenue_gross FROM category c
+JOIN film_category fc ON fc.category_id = c.category_id
+JOIN inventory i ON i.film_id = fc.film_id
+JOIN rental r ON r.inventory_id = i.inventory_id
+JOIN payment p ON p.rental_id = r.rental_id
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 5;
+
+-- 8b. 
+SELECT * FROM top_five_genres;
+
+--8c
+DROP VIEW top_five_genres;
