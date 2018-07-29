@@ -43,21 +43,24 @@ ALTER TABLE actor
 DROP COLUMN middle_name;
 
 --4a
-SELECT last_name FROM actor;
-
---4b
 SELECT last_name, COUNT(*) FROM actor 
 GROUP BY last_name;
 
---4c
+--4b
  SELECT last_name, COUNT(*) as count FROM actor 
  GROUP BY last_name 
  HAVING count > 1;
 
- --4d
+ --4c
 SELECT * FROM actor 
 WHERE last_name LIKE 'Williams';
 
 UPDATE actor
 SET first_name = 'HARPO'
 WHERE actor_id = 172;
+
+--5a
+SHOW CREATE TABLE address;
+
+--6a
+
