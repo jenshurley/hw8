@@ -134,13 +134,13 @@ ORDER BY 2 DESC;
 -- 7f. 
 SELECT store, total_sales FROM sales_by_store;
 
--- 7g. Write a query to display for each store its store ID, city, and country.
+-- 7g. 
 SELECT s.store_id, ci.city, co.country FROM store s
 JOIN address a ON s.address_id = a.address_id
 JOIN city ci ON a.city_id = ci.city_id
 JOIN country co ON ci.country_id = co.country_id;
 
--- 7h. List the top five genres in gross revenue in descending order. (Hint: you may need to use the following tables: category, film_category, inventory, payment, and rental.)
+-- 7h. 
 SELECT name, SUM(p.amount) AS revenue_gross FROM category c
 JOIN film_category fc ON fc.category_id = c.category_id
 JOIN inventory i ON i.film_id = fc.film_id
